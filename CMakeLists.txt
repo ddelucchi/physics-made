@@ -11,6 +11,7 @@ option(PHYSICSMADE_ENABLE_CUDA "Enable CUDA field solvers when a CUDA toolchain 
 option(PHYSICSMADE_BUILD_APPS "Build example applications" ON)
 option(PHYSICSMADE_BUILD_TESTS "Build tests" ON)
 option(PHYSICSMADE_BUILD_VIEWER "Build the GLFW/OpenGL live viewer" ON)
+option(PHYSICSMADE_ENABLE_SANITIZERS "Enable address/undefined sanitizers where supported" OFF)
 
 include(CTest)
 include(GNUInstallDirs)
@@ -21,6 +22,25 @@ include(CompilerWarnings)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+
+function(physicsmade_enable_sanitizers target_name)
+    if(NOT PHYSICSMADE_ENABLE_SANITIZERS)
+        return()
+    endif()
+
+    if(MSVC)
+        target_compile_options(${target_name} PRIVATE /fsanitize=address)
+        target_link_options(${target_name} PRIVATE /fsanitize=address)
+    else()
+        target_compile_options(
+            ${target_name}
+            PRIVATE
+                $<$<COMPILE_LANGUAGE:CXX>:-fsanitize=address,undefined>
+                $<$<COMPILE_LANGUAGE:CXX>:-fno-omit-frame-pointer>
+        )
+        target_link_options(${target_name} PRIVATE -fsanitize=address,undefined)
+    endif()
+endfunction()
 
 set(PHYSICSMADE_CUDA_ENABLED OFF)
 if(PHYSICSMADE_ENABLE_CUDA)
@@ -113,6 +133,7 @@ target_compile_features(physicsmade PUBLIC cxx_std_20)
 target_compile_definitions(physicsmade PUBLIC NOMINMAX)
 
 physicsmade_enable_strict_warnings(physicsmade)
+physicsmade_enable_sanitizers(physicsmade)
 
 function(physicsmade_add_app target_name source_file)
     add_executable(${target_name} ${source_file})
@@ -121,6 +142,7 @@ function(physicsmade_add_app target_name source_file)
         target_link_libraries(${target_name} PRIVATE CUDA::cudart)
     endif()
     physicsmade_enable_strict_warnings(${target_name})
+    physicsmade_enable_sanitizers(${target_name})
 endfunction()
 
 set(PHYSICSMADE_VIEWER_AVAILABLE OFF)
@@ -166,5 +188,6 @@ if(BUILD_TESTING AND PHYSICSMADE_BUILD_TESTS)
         target_link_libraries(physicsmade_tests PRIVATE CUDA::cudart)
     endif()
     physicsmade_enable_strict_warnings(physicsmade_tests)
+    physicsmade_enable_sanitizers(physicsmade_tests)
     add_test(NAME physicsmade_tests COMMAND physicsmade_tests)
 endif()
