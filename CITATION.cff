@@ -1,0 +1,15 @@
+cff-version: 1.2.0
+message: "If you use or discuss this software in research, please cite this repository."
+title: "Physics Made"
+type: software
+authors:
+  - family-names: "Delucchi"
+    given-names: "Daxx"
+abstract: "Extensible scientific-computing framework for spacetime, dynamics, lattice models, and optional CUDA acceleration"
+version: 0.1.0
+date-released: 2026-09-17
+keywords:
+  - "computational-physics"
+  - "c++"
+  - "cuda"
+  - "simulation"
