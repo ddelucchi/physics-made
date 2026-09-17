@@ -1,0 +1,5 @@
+PHYSICSMADE_PLUGIN 1
+id=coupled-su2-fermion-state
+kind=scene
+summary=Generated coupled SU(2) and staggered-fermion lattice visualization.
+entry=builtin:coupled-su2-fermion-state
