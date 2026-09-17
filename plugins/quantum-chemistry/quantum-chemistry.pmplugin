@@ -1,0 +1,5 @@
+PHYSICSMADE_PLUGIN 1
+id=quantum-chemistry-live
+kind=scene
+summary=Generated live quantum-chemistry visualization backed by the runtime scene registry.
+entry=builtin:quantum-chemistry-live
