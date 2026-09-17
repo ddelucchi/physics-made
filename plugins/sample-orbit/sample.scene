@@ -1,0 +1,7 @@
+PHYSICSMADE_SCENE 1
+scene_name=sample-orbit
+kinematics=newtonian
+integrator=velocity-verlet
+preview_steps=0
+preview_dt_seconds=0
+physics_systems=
