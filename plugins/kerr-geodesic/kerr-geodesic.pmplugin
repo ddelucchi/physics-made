@@ -1,0 +1,5 @@
+PHYSICSMADE_PLUGIN 1
+id=kerr-geodesic
+kind=scene
+summary=Generated Kerr geodesic visualization backed by the runtime scene registry.
+entry=builtin:kerr-geodesic
