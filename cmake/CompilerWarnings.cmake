@@ -1,0 +1,21 @@
+function(physicsmade_enable_strict_warnings target_name)
+    if(MSVC)
+        target_compile_options(
+            ${target_name}
+            PRIVATE
+                $<$<COMPILE_LANGUAGE:CXX>:/W4>
+                $<$<COMPILE_LANGUAGE:CXX>:/permissive->
+                $<$<COMPILE_LANGUAGE:CXX>:/EHsc>
+        )
+    else()
+        target_compile_options(
+            ${target_name}
+            PRIVATE
+                $<$<COMPILE_LANGUAGE:CXX>:-Wall>
+                $<$<COMPILE_LANGUAGE:CXX>:-Wextra>
+                $<$<COMPILE_LANGUAGE:CXX>:-Wpedantic>
+                $<$<COMPILE_LANGUAGE:CXX>:-Wconversion>
+                $<$<COMPILE_LANGUAGE:CXX>:-Wshadow>
+        )
+    endif()
+endfunction()

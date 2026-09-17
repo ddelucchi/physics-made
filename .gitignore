@@ -1,0 +1,14 @@
+/.vs/
+/build/
+/out/
+/bin/
+/obj/
+/CMakeUserPresets.json
+/Testing/
+/.cache/
+*.user
+*.suo
+*.pdb
+*.ilk
+*.obj
+*.ipch
