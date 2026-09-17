@@ -29,3 +29,22 @@ jobs:
         run: cmake --build build --config Release --parallel
       - name: Test
         run: ctest --test-dir build -C Release --output-on-failure
+
+  sanitizers:
+    name: ASan + UBSan CPU path
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure
+        run: >-
+          cmake -S . -B build-sanitize
+          -DPHYSICSMADE_ENABLE_CUDA=OFF
+          -DPHYSICSMADE_BUILD_VIEWER=OFF
+          -DPHYSICSMADE_BUILD_APPS=ON
+          -DPHYSICSMADE_BUILD_TESTS=ON
+          -DPHYSICSMADE_ENABLE_SANITIZERS=ON
+          -DCMAKE_BUILD_TYPE=Debug
+      - name: Build
+        run: cmake --build build-sanitize --parallel
+      - name: Test
+        run: ctest --test-dir build-sanitize --output-on-failure
