@@ -131,16 +131,6 @@ if(PHYSICSMADE_BUILD_VIEWER)
 
     if(TARGET glfw)
         list(APPEND PHYSICSMADE_VIEWER_LIBS glfw)
-    elseif(EXISTS "C:/vcpkg/installed/x64-windows/include/GLFW/glfw3.h" AND EXISTS "C:/vcpkg/installed/x64-windows/lib/glfw3dll.lib")
-        add_library(physicsmade_glfw INTERFACE)
-        target_include_directories(physicsmade_glfw INTERFACE "C:/vcpkg/installed/x64-windows/include")
-        target_link_libraries(
-            physicsmade_glfw
-            INTERFACE
-                optimized "C:/vcpkg/installed/x64-windows/lib/glfw3dll.lib"
-                debug "C:/vcpkg/installed/x64-windows/debug/lib/glfw3dll.lib"
-        )
-        list(APPEND PHYSICSMADE_VIEWER_LIBS physicsmade_glfw)
     endif()
 
     if(TARGET OpenGL::GL AND TARGET OpenGL::GLU)
