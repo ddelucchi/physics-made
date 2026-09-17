@@ -1,0 +1,5 @@
+PHYSICSMADE_PLUGIN 1
+id=sample-orbit
+kind=scene
+summary=Minimal serialized scene demonstrating filesystem plugin discovery.
+entry=sample.scene
