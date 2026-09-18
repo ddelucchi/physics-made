@@ -849,6 +849,60 @@ void testCoupledSu2FermionLattice() {
     }), "coupled lattice site sampling should expose nonzero density somewhere on the grid");
 }
 
+
+double harmonicOscillatorError(
+    const physicsmade::physics::StateIntegrator& integrator,
+    double dtSeconds) {
+    std::vector<physicsmade::scene::ObjectState> states{
+        {"oscillator", 1.0, 0.0, 0.1, false, {1.0, 0.0, 0.0}, {0.0, 0.0, 0.0}},
+    };
+    const physicsmade::physics::NewtonianKinematics kinematics;
+    const physicsmade::spacetime::SpacetimeModel spacetime;
+    const physicsmade::physics::ForceEvaluator restoringForce =
+        [](const std::vector<physicsmade::scene::ObjectState>& current,
+           std::vector<physicsmade::math::Vector3>& forces) {
+            forces.assign(current.size(), {});
+            for (std::size_t i = 0; i < current.size(); ++i) {
+                // Unit-mass/unit-frequency harmonic oscillator: x'' = -x.
+                forces[i].x = -current[i].position.x;
+            }
+        };
+
+    const int steps = static_cast<int>(std::llround(1.0 / dtSeconds));
+    for (int step = 0; step < steps; ++step) {
+        integrator.integrate(states, dtSeconds, restoringForce, kinematics, spacetime);
+    }
+
+    const double exactX = std::cos(1.0);
+    const double exactV = -std::sin(1.0);
+    const double dx = states.front().position.x - exactX;
+    const double dv = states.front().velocity.x - exactV;
+    return std::sqrt((dx * dx) + (dv * dv));
+}
+
+void testIntegratorConvergenceOrders() {
+    const physicsmade::physics::VelocityVerletIntegrator verlet;
+    const physicsmade::physics::RungeKutta4Integrator rk4;
+
+    const double verletCoarse = harmonicOscillatorError(verlet, 0.2);
+    const double verletFine = harmonicOscillatorError(verlet, 0.1);
+    const double rk4Coarse = harmonicOscillatorError(rk4, 0.2);
+    const double rk4Fine = harmonicOscillatorError(rk4, 0.1);
+
+    require(verletFine < verletCoarse, "Velocity Verlet must converge under timestep refinement");
+    require(rk4Fine < rk4Coarse, "RK4 must converge under timestep refinement");
+
+    const double verletRatio = verletCoarse / verletFine;
+    const double rk4Ratio = rk4Coarse / rk4Fine;
+
+    require(verletRatio > 3.2 && verletRatio < 4.8,
+            "Velocity Verlet should exhibit second-order global convergence on the analytic oscillator benchmark");
+    require(rk4Ratio > 12.0 && rk4Ratio < 20.0,
+            "RK4 should exhibit fourth-order global convergence on the analytic oscillator benchmark");
+    require(rk4Fine < 0.01 * verletFine,
+            "RK4 fine-step error should be decisively below Velocity Verlet on the same benchmark");
+}
+
 void testGeneratedScenes() {
     const auto quantumChemistryScene = physicsmade::runtime::buildGeneratedScene("quantum-chemistry-live");
     require(quantumChemistryScene.has_value(), "generated quantum chemistry scene should exist");
@@ -1035,6 +1089,7 @@ int main() {
         testHingeLimitConstraint();
         testHingeMotorConstraint();
         testContactSolver();
+        testIntegratorConvergenceOrders();
         testWorldStepping();
         testRigidBodyRotation();
         testSpecialRelativisticKinematics();
