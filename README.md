@@ -93,7 +93,7 @@ The live viewer additionally requires GLFW and OpenGL development packages. View
 
 ## Validation philosophy
 
-Tests exercise mathematical primitives, lightlike intervals, gravity, field sampling, rigid-body behavior, constraints, spacetime metrics, runtime wiring, and CPU/CUDA-style interfaces. Passing these tests establishes software regressions and local invariants; it does not by itself establish research-grade physical accuracy for every model.
+Tests exercise mathematical primitives, lightlike intervals, gravity, field sampling, rigid-body behavior, constraints, spacetime metrics, runtime wiring, and CPU/CUDA-style interfaces. The suite also benchmarks Velocity Verlet and RK4 against the analytic unit-frequency harmonic oscillator and requires the expected second- and fourth-order global convergence under timestep halving. Passing these tests establishes software regressions, selected numerical-order checks, and local invariants; it does not by itself establish research-grade physical accuracy for every model.
 
 ## Scope
 
@@ -102,3 +102,10 @@ The broad module surface is intentional: this project explores how independently
 ## License
 
 Source is publicly viewable for portfolio and technical evaluation. See [LICENSE](LICENSE).
+
+
+## Verification boundary
+
+The strongest checks in the current public suite are those with an external analytic target, such as the flat-spacetime geodesic, far-field metric limits, lightlike intervals, Newtonian force symmetry, and integrator convergence order. Broader field-theory and quantum-chemistry modules currently have more limited regression/consistency coverage and should not be read as continuum-limit or benchmark-quality validation.
+
+GitHub Actions is configured for CPU builds/tests and sanitizer coverage, but the account currently reports workflow startup failures before job creation. Until hosted runner execution is restored, use the clone-local CMake/CTest commands above as the verification path.
